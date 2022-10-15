@@ -1,16 +1,12 @@
 import React from 'react';
-import {Button as ButtonUI} from '@rneui/themed';
-import {View} from 'react-native';
+import {Button as ButtonPaper} from 'react-native-paper';
 
-interface iProps {
-  title?: string;
-  onClick?: () => void;
-}
+type ButtonProps = typeof ButtonPaper.defaultProps;
 
-export default function Button(props: iProps) {
+export default function Button(props: ButtonProps) {
   return (
-    <View>
-      <ButtonUI title={props.title} type="outline" onPress={props.onClick} />
-    </View>
+    <ButtonPaper {...props} mode={props?.mode || 'contained'}>
+      {props?.children}
+    </ButtonPaper>
   );
 }

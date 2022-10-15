@@ -1,8 +1,8 @@
 import React from 'react';
-import {Text as TextUI, TextProps} from '@rneui/themed';
+import {Text as TextPaper} from 'react-native-paper';
 
-interface iProps extends TextProps {}
+type TextProps = typeof TextPaper.defaultProps;
 
-export default function Text(props: iProps) {
-  return <TextUI {...props} />;
+export default function Text(props: TextProps) {
+  return <TextPaper {...props} />;
 }

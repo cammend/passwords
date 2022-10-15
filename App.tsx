@@ -10,28 +10,37 @@
 
 import React from 'react';
 import {SafeAreaView, StatusBar} from 'react-native';
-
-import DrawerNavigator from './src/navigation/drawer';
-import useTheme from './src/theme/use-theme';
+import useTheme, {useThemePaper} from './src/theme/use-theme';
+import {Provider as PaperProvider} from 'react-native-paper';
+import {SnackController} from './src/components/snack';
+import MainView from './src/views/main';
+import {DialogAcceptCancelController} from './src/components/dialog';
+import RNBootSplash from 'react-native-bootsplash';
 
 const App = () => {
   // const isDarkMode = useColorScheme() === 'dark';
   const theme = useTheme();
-
-  console.log('theme.colors.background', theme.colors.background);
+  const themePaper = useThemePaper();
 
   const backgroundStyle = {
     backgroundColor: theme.colors.background,
     flex: 1,
   };
 
+  React.useEffect(() => {
+    setTimeout(() => {
+      RNBootSplash.hide({fade: true});
+    }, 3000);
+  }, []);
+
   return (
     <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={theme.dark ? 'light-content' : 'dark-content'}
-        // backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <DrawerNavigator theme={theme} />
+      <StatusBar barStyle={theme.dark ? 'light-content' : 'dark-content'} />
+      <PaperProvider theme={themePaper}>
+        <MainView theme={theme} />
+        <SnackController />
+        <DialogAcceptCancelController />
+      </PaperProvider>
     </SafeAreaView>
   );
 };

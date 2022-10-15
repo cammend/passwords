@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {Dialog as DialogUI} from '@rneui/themed';
-import {StyleSheet} from 'react-native';
-import Dialog from '../../components/dialog';
-import Input from '../../components/input';
+// import {StyleSheet} from 'react-native';
+import Dialog from '../dialog';
+import Input from '../input';
 
 interface iProps {
   open: boolean;
@@ -10,7 +10,7 @@ interface iProps {
   onAccept: (value: string) => void;
 }
 
-export default function AddItemModal(props: iProps) {
+export default function AddItemModalComponent(props: iProps) {
   const [value, setValue] = useState('');
 
   const onAccept = () => {
@@ -30,14 +30,14 @@ export default function AddItemModal(props: iProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  view1: {
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    flexGrow: 1,
-  },
-  view2: {
-    flex: 1,
-    flexGrow: 1,
-  },
-});
+// const styles = StyleSheet.create({
+//   view1: {
+//     marginLeft: 'auto',
+//     marginRight: 'auto',
+//     flexGrow: 1,
+//   },
+//   view2: {
+//     flex: 1,
+//     flexGrow: 1,
+//   },
+// });

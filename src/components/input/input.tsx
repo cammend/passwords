@@ -1,18 +1,8 @@
 import React from 'react';
-import {Input as InputUI, InputProps} from '@rneui/themed';
-import {StyleSheet} from 'react-native';
-import {useTheme} from '@react-navigation/native';
+import {TextInput} from 'react-native-paper';
 
-interface iProps extends InputProps {}
+export type TextInputProps = typeof TextInput.defaultProps;
 
-export default function Input(props: iProps) {
-  const theme = useTheme();
-
-  const styles = StyleSheet.create({
-    text: {
-      color: theme.colors.text,
-    },
-  });
-
-  return <InputUI {...props} style={[styles.text, props.style]} />;
+export default function Input(props: TextInputProps) {
+  return <TextInput {...props} mode={props?.mode || 'outlined'} />;
 }

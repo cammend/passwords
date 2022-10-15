@@ -6,6 +6,8 @@ interface iProps extends OverlayProps {
   title?: string;
 }
 
+export type ColorDialog = 'warning' | 'error' | 'info' | 'success';
+
 export default function Dialog(props: iProps) {
   const {children, ...otherProps} = props;
 

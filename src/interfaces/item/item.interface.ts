@@ -1,6 +1,8 @@
-export interface iItemEncryptedField {
-  id: string;
-  name: string;
+import {iFieldItem} from '../field/field.interface';
+
+type FieldItemType = Omit<iFieldItem, 'removable'>;
+
+export interface iItemEncryptedField extends FieldItemType {
   value: string;
 }
 
