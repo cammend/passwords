@@ -30,4 +30,8 @@ export class Account {
   static async previousRegistered() {
     return !!(await StockData.get(USER_PASSWORD_KEY));
   }
+
+  static async remove() {
+    await StockData.delete(USER_PASSWORD_KEY);
+  }
 }

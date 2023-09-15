@@ -17,13 +17,26 @@ export default function DialogAcceptCancelControllerComponent() {
     updateState: setState,
   });
 
+  const handlerInputChangeText = (text: string) => {
+    setState({...state, inputValue: text});
+  };
+
+  const resetState = () => {
+    setState({
+      ...state,
+      visible: false,
+      inputLabel: undefined,
+      inputValue: undefined,
+    });
+  };
+
   const handlerAccept = () => {
-    setState({...state, visible: false});
     DialogAcceptCancelControllerState.__onAccept();
+    resetState();
   };
   const handlerCancel = () => {
-    setState({...state, visible: false});
     DialogAcceptCancelControllerState.__onCancel();
+    resetState();
   };
 
   return (
@@ -35,6 +48,8 @@ export default function DialogAcceptCancelControllerComponent() {
       onDismiss={handlerCancel}
       onAccept={handlerAccept}
       onCancel={handlerCancel}
+      inputLabel={state.inputLabel}
+      handlerInputChangeText={handlerInputChangeText}
     />
   );
 }

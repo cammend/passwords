@@ -41,12 +41,11 @@ export function ModalComponentBase(props: iPropsBase) {
     modal: {
       backgroundColor: theme.colors.backdrop,
       padding: 20,
-      margin: 40,
       flex: 1,
       borderRadius: 5,
     },
     style: {
-      backgroundColor: theme.colors.backdrop,
+      marginTop: 0,
     },
   });
 
@@ -57,12 +56,13 @@ export function ModalComponentBase(props: iPropsBase) {
   }
 
   return (
-    <Provider>
+    <Provider theme={theme}>
       <Portal>
         <Modal
           visible={true}
           onDismiss={props.onClose}
-          contentContainerStyle={[st.modal, props.styles?.body]}>
+          contentContainerStyle={[st.modal, props.styles?.body]}
+          style={st.style}>
           {props.children}
         </Modal>
       </Portal>

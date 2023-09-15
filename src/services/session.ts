@@ -57,6 +57,7 @@ export default abstract class Session {
     const isValid = this.isValid();
     if (!this.account || !isValid) {
       this.expiredEvent.emit();
+      return undefined;
     }
     return this.account;
   }

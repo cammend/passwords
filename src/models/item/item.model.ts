@@ -7,8 +7,6 @@ import uuid from 'react-native-uuid';
 import StockData from '../../services/stock-data';
 import EventBase from '../../services/events';
 import Crypto, {iCipherObject} from '../../services/crypto';
-import {FieldType} from '../../interfaces/field/field.interface';
-import {format} from 'date-fns';
 
 interface iConstructor {
   id?: string;
@@ -78,6 +76,13 @@ export class ItemEncrypted implements iItemEncrypted {
     return this.save();
   }
 
+  setTitle(title?: string) {
+    const history = this.getRecentHistory();
+    if (history) {
+      this.title = title || history.fields[0].value;
+    }
+  }
+
   async deleteBit(id: string) {
     this.history = this.history.filter(h => h.id !== id);
     return this.save();
@@ -137,7 +142,6 @@ export class ItemEncrypted implements iItemEncrypted {
       this.indexItemBit = this.history.length - 1;
     }
     this.indexItemBit += modifier;
-    console.log('this.indexItemBit', this.indexItemBit);
     return this.indexItemBit;
   }
 
@@ -268,6 +272,7 @@ export class ItemEncryptedList {
 
   async clearList() {
     await StockData.delete(this.key);
+    this.updateEvent.emit();
   }
 
   filter(params?: iFilter) {
@@ -283,62 +288,5 @@ export class ItemEncryptedList {
     }
 
     return list;
-  }
-
-  async getText(decrypted = false): Promise<string> {
-    let text = '\n';
-
-    const _decipher = async (
-      item: ItemEncrypted,
-      historyList: iItemEncryptedBit[],
-      index = 0,
-    ) => {
-      const history = historyList[index];
-      if (!history) {
-        return;
-      }
-
-      const date = new Date();
-      date.setTime(history.creation);
-      const dateString = format(date, 'dd/mm/yyyy HH:mm:ss');
-
-      text += `\t++++ Creation:${dateString}\n`;
-      let fields = history.fields;
-      if (decrypted) {
-        fields = await item.getAllFieldsDecrypted(history);
-      }
-      fields.forEach(field => {
-        const fieldValue = decrypted
-          ? field.value
-          : (JSON.parse(field.value) as iCipherObject);
-
-        let value = '';
-        if (typeof fieldValue === 'string') {
-          value = fieldValue;
-        } else {
-          value = `${fieldValue.cipher}@${fieldValue.iv}`;
-        }
-
-        text += `\t\t++++ ${field.title}[${
-          field.type || FieldType.TEXT
-        }]: ${value}\n`;
-      });
-
-      await _decipher(item, historyList, ++index);
-    };
-
-    const _listDecrypt = async (list: ItemEncrypted[], index = 0) => {
-      const item = list[index];
-      if (!item) {
-        return;
-      }
-      text += `++++ ITEM: ${item.id} +++++++++++++++++++++++++++++++++++++++\n`;
-      await _decipher(item, item.history);
-      await _listDecrypt(list, ++index);
-    };
-
-    await _listDecrypt(this.list);
-
-    return text;
   }
 }

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Icon, SpeedDial} from '@rneui/themed';
-import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {SpeedDial} from '@rneui/themed';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import Field from '../field';
 import uuid from 'react-native-uuid';
 import {FieldType, iFieldItem} from '../../interfaces/field/field.interface';
@@ -8,11 +8,12 @@ import {useNavigation} from '@react-navigation/native';
 import {ItemListState} from '../../state/item-list/item-list.state';
 import {ItemEncrypted} from '../../models/item/item.model';
 import Session from '../../services/session';
-import Button from '../button';
+import Button, {IconButton} from '../button';
 import {SnackControllerState} from '../../state/snack/snack.state';
 import SystemError from '../../models/error/error.model';
-import AddItemFieldModal from './add-item-field-modal';
 import {useThemePaper} from '../../theme/use-theme';
+import {DialogAcceptCancelControllerState} from '../../state/dialog/dialog-accept-cancel.state';
+import Text from '../text';
 
 export interface iAddItemProps {
   edit?: string;
@@ -22,9 +23,11 @@ export interface iAddItemProps {
 
 type iFieldItemDefault = Omit<iFieldItem, 'uuid'>;
 
+export const TITLE_FIRST_FIELD = 'Título';
+
 const defaults: iFieldItemDefault[] = [
   {
-    title: 'Título',
+    title: TITLE_FIRST_FIELD,
   },
   {
     title: 'Usuario',
@@ -109,7 +112,6 @@ const getDefaultsFields = () =>
 export default function AddItemComponent(props: iAddItemProps) {
   const navigation = useNavigation();
   const [openAddField, setOpenAddField] = useState(false);
-  const [openDialogAdd, setOpenDialogAdd] = useState(false);
   const [fieldTypeAdd, setFieldTypeAdd] = useState<FieldType>();
   const [fields, setFields] = useState<iFieldItem[]>([]);
   const [indexFocus] = useState(0);
@@ -118,7 +120,6 @@ export default function AddItemComponent(props: iAddItemProps) {
   const edit = props.edit || '';
 
   const onAccept = (value: string) => {
-    setOpenDialogAdd(false);
     setFields(addNewFieldToFields(fields, value, fieldTypeAdd));
   };
 
@@ -129,9 +130,18 @@ export default function AddItemComponent(props: iAddItemProps) {
   };
 
   const handleDialogAdd = (type: FieldType) => {
-    setOpenAddField(false);
-    setOpenDialogAdd(true);
+    setOpenAddField(false); // cerrar botón "dial"
     setFieldTypeAdd(type);
+
+    DialogAcceptCancelControllerState.showInfo({
+      title: 'Agregar campo',
+      message: 'Escriba el título del campo nuevo',
+      inputLabel: 'Título',
+    }).then(response => {
+      if (response.accept && response.inputValue) {
+        onAccept(response.inputValue);
+      }
+    });
   };
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -149,7 +159,6 @@ export default function AddItemComponent(props: iAddItemProps) {
         await editItemWithNewFields(edit, item, fields);
         await updateItemList(edit, item);
         props.onAccept?.();
-        // ((navigation as any).replace as Function)('ItemList');
       } else {
         SnackControllerState.showError({
           message: (status as SystemError).message,
@@ -180,6 +189,16 @@ export default function AddItemComponent(props: iAddItemProps) {
     <View style={styles.view}>
       <ScrollView style={styles.scroll}>
         <View style={styles.view1}>
+          <View style={styles.view2}>
+            <Text style={styles.title}>{edit ? 'EDICIÓN' : 'CREACIÓN'}</Text>
+            <View style={styles.close}>
+              <IconButton
+                icon="close-octagon"
+                color={themePaper.colors.error}
+                onPress={() => props.onAccept?.()}
+              />
+            </View>
+          </View>
           {fields.map((field, index) => (
             <Field
               key={field.uuid}
@@ -197,9 +216,15 @@ export default function AddItemComponent(props: iAddItemProps) {
           ))}
 
           {!props.preview && (
-            <Button onPress={save}>{edit ? 'Editar' : 'Agregar'}</Button>
+            <Button style={styles.btn} onPress={save}>
+              {edit ? 'Editar' : 'Agregar'}
+            </Button>
           )}
-          {props.preview && <Button onPress={props.onAccept}>Aceptar</Button>}
+          {props.preview && (
+            <Button style={styles.btn} onPress={props.onAccept}>
+              Aceptar
+            </Button>
+          )}
         </View>
       </ScrollView>
 
@@ -225,12 +250,6 @@ export default function AddItemComponent(props: iAddItemProps) {
               onPress={() => handleDialogAdd(FieldType.PASSWORD)}
             />
           </SpeedDial>
-
-          <AddItemFieldModal
-            open={openDialogAdd}
-            onClose={() => setOpenDialogAdd(false)}
-            onAccept={onAccept}
-          />
         </>
       )}
     </View>
@@ -250,9 +269,28 @@ const styles = StyleSheet.create({
   view1: {
     flexGrow: 1,
     padding: 20,
+    paddingRight: 45,
+    paddingLeft: 45,
   },
   view2: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    position: 'relative',
+  },
+  btn: {
+    marginBottom: 15,
+    marginTop: 5,
+  },
+  title: {
+    fontSize: 24,
     flexGrow: 1,
+    textAlign: 'center',
+  },
+  close: {
+    top: -8,
+    right: -45,
+    position: 'absolute',
   },
 });

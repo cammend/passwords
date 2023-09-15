@@ -16,7 +16,11 @@ export default function SnackControllerComponent() {
     <Snack
       color={state.color}
       visible={state.visible}
-      onDismiss={() => setState({...state, visible: false})}>
+      onDismiss={() => setState({...state, visible: false})}
+      action={{
+        label: 'Cerrar',
+        onPress: () => setState({...state, visible: false}),
+      }}>
       {state.message}
     </Snack>
   );

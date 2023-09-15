@@ -47,9 +47,13 @@ export default function MainView(props: iProps) {
 
   useEffect(() => {
     checkPreviousRegistered();
-    Session.expiredEvent.on(() => {
-      showOne({login: true});
+    const evt = Session.expiredEvent.on(() => {
+      checkPreviousRegistered();
     });
+
+    return () => {
+      evt.off();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

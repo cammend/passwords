@@ -39,8 +39,8 @@ export default function ItemList() {
     DialogAcceptCancelControllerState.showError({
       title: 'Eliminar item',
       message: `¿Seguro de eliminar el item: ${item.title}?`,
-    }).then(accept => {
-      if (accept) {
+    }).then(response => {
+      if (response.accept) {
         ItemListState.delete(id);
       }
     });

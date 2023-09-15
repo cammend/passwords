@@ -38,6 +38,7 @@ export function Field(props: iProps) {
           secureTextEntry={
             props.type === FieldType.PASSWORD ? secureTextEntry : false
           }
+          mode="outlined"
           onChangeText={handleChangeText}
           value={value}
           disabled={props.preview}
@@ -71,9 +72,14 @@ const styles = StyleSheet.create({
   },
   view3: {
     flexGrow: 1,
+    position: 'relative',
   },
   view4: {
     marginLeft: 5,
     justifyContent: 'center',
+    position: 'absolute',
+    top: 5,
+    bottom: 0,
+    right: -45,
   },
 });

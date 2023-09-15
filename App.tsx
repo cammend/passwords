@@ -30,7 +30,7 @@ const App = () => {
   React.useEffect(() => {
     setTimeout(() => {
       RNBootSplash.hide({fade: true});
-    }, 3000);
+    }, 1000);
   }, []);
 
   return (

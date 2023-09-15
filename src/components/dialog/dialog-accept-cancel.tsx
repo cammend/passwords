@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button, Paragraph, Dialog, Portal, Provider} from 'react-native-paper';
+import Input from '../input';
 
 export type ColorDialog = 'warning' | 'error' | 'info' | 'success';
 
@@ -12,31 +13,40 @@ interface iProps {
   onDismiss: () => void;
   onAccept: () => void;
   onCancel: () => void;
+  inputLabel?: string; // si viene seteado, muestra un inputText
+  handlerInputChangeText?: (text: string) => void;
 }
 
+const getColor = (color: ColorDialog) => {
+  return color === 'info'
+    ? '#9171ff'
+    : color === 'warning'
+    ? '#ffcb3e'
+    : color === 'error'
+    ? '#e14949'
+    : '#53d972';
+};
+
 export default function DialogAcceptCancel(props: iProps) {
+  const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    if (!props.visible) {
+      setInputValue('');
+    }
+  }, [props.visible]);
+
   if (!props.visible) {
     return null;
   }
 
-  const color = props.color || 'info';
-  const colorCss =
-    color === 'info'
-      ? '#9171ff'
-      : color === 'warning'
-      ? '#ffcb3e'
-      : color === 'error'
-      ? '#e14949'
-      : '#53d972';
+  const handlerInputChangeText = (text: string) => {
+    setInputValue(text);
+    props.handlerInputChangeText?.(text);
+  };
 
+  const colorCss = getColor(props.color || 'info');
   const st = StyleSheet.create({
-    view1: {
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    },
     bg: {
       backgroundColor: colorCss,
     },
@@ -55,6 +65,13 @@ export default function DialogAcceptCancel(props: iProps) {
             </Dialog.Title>
             <Dialog.Content>
               <Paragraph>{props.message}</Paragraph>
+              {props.inputLabel && (
+                <Input
+                  placeholder={props.inputLabel}
+                  onChangeText={handlerInputChangeText}
+                  value={inputValue}
+                />
+              )}
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={props.onCancel} style={styles.btn}>
@@ -78,6 +95,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    zIndex: 99,
   },
   title: {
     marginTop: 1,
